@@ -27,7 +27,7 @@
         <td>{{patient.name}}</td>
         <td>{{patient.localStatus}}</td>
         <td>
-          <n-date-picker v-model:value="timestamp" type="date"/>
+          <n-date-picker v-model:value="range" type="daterange" clearable />
         </td>
         <td>
           <Toast position="bottom-right" group="br" class="toast"/>
@@ -98,20 +98,20 @@
 
 <script setup lang="ts">
 import { usePatientStore } from "@/store/patient";
-import router from "@/router";
 import {onMounted, ref} from "vue";
 import {patientT} from "@/types/types";
-import Button from 'primevue/button';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 const {rando} = require('@nastyox/rando.js');
 const toast = useToast()
+
+const range= ref<[number, number]>([Date.now(), Date.now()])
 const timestamp = ref<number>(Date.now())
 const patientStore = usePatientStore()
 const newPatient = ref<patientT>({
   id: 0,
   name: '',
-  isAdded: false,
+  copyText: [],
   parameters: {
     bp: null,
     hr: null,
@@ -125,7 +125,64 @@ const localStatuses = ref<{}[]>([
   {label: 'Тяжелое', value: 'Тяжелое'}
 ])
 const showModal = ref(false)
+function createCopyText(patient: patientT) {
+  const days = (range.value[1]-range.value[0])/(24*60*60*1000) + 1
+  let date = range.value[0]
+  let time = '12:00'
+  switch (patient.localStatus) {
+    case 'Удовлетворительное':
+      for (let i = 0; i < days; i+=2 ) {
+        if (date === range.value[1]) {
+          patient.copyText.push(generateText(patient, range.value[1], '10:00'))
+        } else {
+          patient.copyText.push(generateText(patient, date, time))
+          date += 172800000
+          time = '08:00'
+        }
+      }
+      if (date !== range.value[1]) patient.copyText.push(generateText(patient, range.value[1], '10:00'))
+    break;
+    case 'Среднее':
+      for (let i = 0; i < days; i+=1 ) {
+        if (date === range.value[1]) {
+          patient.copyText.push(generateText(patient, range.value[1], '10:00'))
+        } else {
+          patient.copyText.push(generateText(patient, date, time))
+          date += 86400000
+          time = '08:00'
+        }
+      }
+      if (date !== range.value[1]) patient.copyText.push(generateText(patient, range.value[1], '10:00'))
+      break;
+    case 'Тяжелое':
+      for (let i = 0; i < days; i+=0.5 ) {
+        (i ^ 0) === i ? time = '08:00' : time = '20:00'
+        if (date === range.value[1]) {
+          patient.copyText.push(generateText(patient, range.value[1], '10:00'))
+          break;
+        } else {
+          patient.copyText.push(generateText(patient, date, time))
+          date += 43200000
+          time = '08:00'
+        }
+      }
+      if (date !== range.value[1]) patient.copyText.push(generateText(patient, range.value[1], '10:00'))
+      break;
+  }
 
+}
+function generateText(patient: patientT, date: number, time: string): string {
+  patient.parameters.bp = String(rando(110, 129)) + '/' + String(rando(70, 89));
+  patient.parameters.hr = rando(65, 79);
+  patient.parameters.rr = rando(12, 17);
+  return`Дата: ${new Date(date).toLocaleDateString()} Время: ${time}\n` +
+      `Объективный статус: Состояние удовлетворительное. ` +
+      'Положение активное. Кожные покровы бледно-розового цвета, теплые на ощупь. ' +
+      `В лёгких дыхание везикулярное, хрипов нет. ЧДД ${patient.parameters.rr} в минуту. ` +
+      `Тоны сердца приглушены, ритмичные. ЧСС ${patient.parameters.hr} в минуту. ` +
+      `АД ${patient.parameters.bp} мм.рт.ст. Живот мягкий, безболезненный. Физиологические отправления не нарушены.\n` +
+      `Локальный статус: ${patient.localStatus}\n`
+}
 function addNewPatient() {
   patientStore.addNewPatient(newPatient.value)
   newPatient.value.name = ''
@@ -133,37 +190,12 @@ function addNewPatient() {
 }
 function copy(patient: patientT) {
   if (navigator.clipboard) {
-    patient.parameters.bp = String(rando(110, 129)) + '/' + String(rando(70, 89));
-    patient.parameters.hr = rando(65, 79);
-    patient.parameters.rr = rando(12, 17);
-    let time: string | Date = '08:00'
-    let nextDate = timestamp.value
-    if (!patient.isAdded) {
-      time = '12:00'
-    }
-    navigator.clipboard.writeText(`Дата: ${new Date(nextDate).toLocaleDateString()} Время: ${time}\n` +
-        `Объективный статус: Состояние удовлетворительное. ` +
-        'Положение активное. Кожные покровы бледно-розового цвета, теплые на ощупь. ' +
-        `В лёгких дыхание везикулярное, хрипов нет. ЧДД ${patient.parameters.rr} в минуту. ` +
-        `Тоны сердца приглушены, ритмичные. ЧСС ${patient.parameters.hr} в минуту. ` +
-        `АД ${patient.parameters.bp} мм.рт.ст. Живот мягкий, безболезненный. Физиологические отправления не нарушены.\n` +
-        `Локальный статус: ${patient.localStatus}`)
+    createCopyText(patient)
+    navigator.clipboard.writeText(patient.copyText.join('\n'))
         .then(() => {
-          patient.isAdded = true
-          switch (patient.localStatus){
-            case 'Удовлетворительное' :
-              nextDate = timestamp.value + 172800000
-              timestamp.value = nextDate
-              break;
-            case 'Среднее' :
-              nextDate = timestamp.value + 86400000
-              timestamp.value = nextDate
-              break;
-            case 'Тяжелое':
-              nextDate = timestamp.value + 43200000
-              timestamp.value = nextDate
-          }
+          console.log('Текст скопирован')
           showSuccess()
+          patient.copyText = []
         })
         .catch((error) => {
           console.error('Ошибка при копировании текста: ' + error);

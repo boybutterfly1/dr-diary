@@ -1,7 +1,7 @@
 export interface patientT {
   id: number,
   name: string,
-  isAdded: boolean
+  copyText: string[]
   parameters: parametersT,
   localStatus: string
 }
