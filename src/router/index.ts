@@ -1,17 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Main from '@/pages/Main.vue'
-import PatientInfo from '@/pages/PatientInfo.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'patientsList',
     component: Main
-  },
-  {
-    path: '/patient/:id',
-    name: 'patientInfo',
-    component: PatientInfo
   },
 ]
 

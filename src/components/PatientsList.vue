@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div class="container__header">
+      <span>Doctor's Diary</span>
       <n-button
           type="primary"
-          class="container__header btn"
           @click="showModal = true"
       >
         Добавить пациента
@@ -227,18 +227,23 @@ onMounted(() => {
 
 <style lang="sass" scoped>
 .container
-  display: flex
-  flex-direction: column
-  padding: 20px
+  padding: 40px
+  margin: 0 auto
+  width: 1000px
   &__header
     display: flex
-    margin-bottom: 20px
-    justify-content: flex-end
+    margin-bottom: 30px
+    justify-content: space-between
+    & span
+      font-size: 30px
+      font-weight: bold
+    & button
+      margin-top: 10px
   table
+    width: 100%
     border-collapse: collapse
     font-size: 14px
     text-align: left
-    width: 100%
     & thead
       & th
         font-weight: bold
