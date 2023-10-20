@@ -115,14 +115,15 @@ const newPatient = ref<patientT>({
   parameters: {
     bp: null,
     hr: null,
-    rr: null
+    rr: null,
+    temperature: null
   },
   localStatus: ''
 })
 const localStatuses = ref<{}[]>([
-  {label: 'Удовлетворительное', value: 'Удовлетворительное'},
-  {label: 'Среднее', value: 'Среднее'},
-  {label: 'Тяжелое', value: 'Тяжелое'}
+  {label: 'Удовлетворительный', value: 'Удовлетворительный'},
+  {label: 'Средний', value: 'Средний'},
+  {label: 'Тяжелый', value: 'Тяжелый'}
 ])
 const showModal = ref(false)
 function createCopyText(patient: patientT) {
@@ -130,7 +131,7 @@ function createCopyText(patient: patientT) {
   let date = range.value[0]
   let time = '12:00'
   switch (patient.localStatus) {
-    case 'Удовлетворительное':
+    case 'Удовлетворительный':
       for (let i = 0; i < days; i+=2 ) {
         if (date === range.value[1]) {
           patient.copyText.push(generateText(patient, range.value[1], '10:00'))
@@ -142,7 +143,7 @@ function createCopyText(patient: patientT) {
       }
       if (date !== range.value[1]) patient.copyText.push(generateText(patient, range.value[1], '10:00'))
     break;
-    case 'Среднее':
+    case 'Средний':
       for (let i = 0; i < days; i+=1 ) {
         if (date === range.value[1]) {
           patient.copyText.push(generateText(patient, range.value[1], '10:00'))
@@ -154,7 +155,7 @@ function createCopyText(patient: patientT) {
       }
       if (date !== range.value[1]) patient.copyText.push(generateText(patient, range.value[1], '10:00'))
       break;
-    case 'Тяжелое':
+    case 'Тяжелый':
       for (let i = 0; i < days; i+=0.5 ) {
         (i ^ 0) === i ? time = '08:00' : time = '20:00'
         if (date === range.value[1]) {
@@ -169,24 +170,30 @@ function createCopyText(patient: patientT) {
       if (date !== range.value[1]) patient.copyText.push(generateText(patient, range.value[1], '10:00'))
       break;
   }
-
 }
 function generateText(patient: patientT, date: number, time: string): string {
   patient.parameters.bp = String(rando(110, 129)) + '/' + String(rando(70, 89));
   patient.parameters.hr = rando(65, 79);
   patient.parameters.rr = rando(12, 17);
-  return`Дата: ${new Date(date).toLocaleDateString()} Время: ${time}\n` +
-      `Объективный статус: Состояние удовлетворительное. ` +
-      'Положение активное. Кожные покровы бледно-розового цвета, теплые на ощупь. ' +
-      `В лёгких дыхание везикулярное, хрипов нет. ЧДД ${patient.parameters.rr} в минуту. ` +
-      `Тоны сердца приглушены, ритмичные. ЧСС ${patient.parameters.hr} в минуту. ` +
-      `АД ${patient.parameters.bp} мм.рт.ст. Живот мягкий, безболезненный. Физиологические отправления не нарушены.\n` +
-      `Локальный статус: ${patient.localStatus}\n`
+  patient.parameters.temperature = rando(36.5, 36.8, 'float').toFixed(1);
+
+  return (
+        `Дата: ${new Date(date).toLocaleDateString()} Время: ${time}\n` +
+        '\n' +
+        'Жалобы:\n' +
+        'Общее состояние удовлетворительное. \n' +
+        `Тоны сердца ясные, ритм не нарушен. АД ${patient.parameters.bp} мм рт ст. ЧСС ${patient.parameters.hr} ударов в минуту.\n` +
+        `Дыхание везикулярное, хрипов нет. ЧДД ${patient.parameters.rr} в минуту.\n` +
+        `Кожные покровы физиологической окраски. Температура тела ${patient.parameters.temperature} 0С.\n` +
+        'Живот не вздут, мягкий, безболезненный, перитонеальных знаков нет.\n' +
+        'Стул и мочеиспускание не нарушены.\n' +
+        `Локальный статус: ${patient.localStatus}`
+  )
 }
 function addNewPatient() {
-  patientStore.addNewPatient(newPatient.value)
-  newPatient.value.name = ''
-  showModal.value = false
+  patientStore.addNewPatient(newPatient.value);
+  newPatient.value.name = '';
+  showModal.value = false;
 }
 function copy(patient: patientT) {
   if (navigator.clipboard) {
@@ -248,8 +255,16 @@ onMounted(() => {
             transition: transform 0.3s ease
             &:hover
               transform: scale(1.15)
-          &:nth-child(7)
-            width: 5%
+          &:nth-child(1)
+            width: 30%
+            text-align: left
+          &:nth-child(2)
+            width: 30%
+            text-align: left
+          &:nth-child(3)
+            width: 270px
+            text-align: left
+          &:nth-child(5)
             text-align: right
 .new-patient-form
   & .inputs
