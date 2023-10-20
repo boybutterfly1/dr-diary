@@ -187,7 +187,9 @@ function generateText(patient: patientT, date: number, time: string): string {
         `Кожные покровы физиологической окраски. Температура тела ${patient.parameters.temperature} 0С.\n` +
         'Живот не вздут, мягкий, безболезненный, перитонеальных знаков нет.\n' +
         'Стул и мочеиспускание не нарушены.\n' +
-        `Локальный статус: ${patient.localStatus}`
+        `Локальный статус: ${patient.localStatus}\n` +
+        '\n' +
+        'Врач: '
   )
 }
 function addNewPatient() {
