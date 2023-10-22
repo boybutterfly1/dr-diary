@@ -106,7 +106,6 @@ const {rando} = require('@nastyox/rando.js');
 const toast = useToast()
 
 const range= ref<[number, number]>([Date.now(), Date.now()])
-const timestamp = ref<number>(Date.now())
 const patientStore = usePatientStore()
 const newPatient = ref<patientT>({
   id: 0,
@@ -187,7 +186,7 @@ function generateText(patient: patientT, date: number, time: string): string {
         `Кожные покровы физиологической окраски. Температура тела ${patient.parameters.temperature} 0С.\n` +
         'Живот не вздут, мягкий, безболезненный, перитонеальных знаков нет.\n' +
         'Стул и мочеиспускание не нарушены.\n' +
-        `Локальный статус: ${patient.localStatus}\n` +
+        `Локальный статус: \n` +
         '\n' +
         'Врач: '
   )
