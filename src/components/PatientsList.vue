@@ -188,7 +188,8 @@ function generateText(patient: patientT, date: number, time: string): string {
         'Стул и мочеиспускание не нарушены.\n' +
         `Локальный статус: \n` +
         '\n' +
-        'Врач: '
+        'Врач: ' +
+        '\n'
   )
 }
 function addNewPatient() {
