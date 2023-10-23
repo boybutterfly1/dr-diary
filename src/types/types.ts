@@ -3,7 +3,7 @@ export interface patientT {
   name: string,
   copyText: string[]
   parameters: parametersT,
-  localStatus: string
+  localStatus: string,
 }
 export interface parametersT {
   bp: string | null,

@@ -13,7 +13,6 @@
       <thead>
       <tr class="head">
         <th>Имя</th>
-        <th>Локальный статус</th>
         <th>Следующий осмотр</th>
         <th></th>
         <th></th>
@@ -25,13 +24,12 @@
           v-for="patient in patientStore.patients"
       >
         <td>{{patient.name}}</td>
-        <td>{{patient.localStatus}}</td>
         <td>
           <n-date-picker v-model:value="range" type="daterange" clearable />
         </td>
         <td>
           <Toast position="bottom-right" group="br" class="toast"/>
-            <img src="https://img.icons8.com/ios-filled/50/000000/documents.png"
+            <img src="https://img.icons8.com/material-rounded/24/copy.png"
                  alt="copy"
                  @click="copy(patient)"
             />
@@ -117,7 +115,7 @@ const newPatient = ref<patientT>({
     rr: null,
     temperature: null
   },
-  localStatus: ''
+  localStatus: '',
 })
 const localStatuses = ref<{}[]>([
   {label: 'Удовлетворительный', value: 'Удовлетворительный'},
@@ -175,7 +173,12 @@ function generateText(patient: patientT, date: number, time: string): string {
   patient.parameters.hr = rando(65, 79);
   patient.parameters.rr = rando(12, 17);
   patient.parameters.temperature = rando(36.5, 36.8, 'float').toFixed(1);
-
+  let lastDateText = ''
+  let lastDateStatus = ''
+  if (date === range.value[1]) {
+    lastDateStatus = 'Повязки сухие, швы состоятельны, рана заживает первичным натяжением без признаков воспаления. Дистальнее нейротрофических нарушений не наблюдается. Конечность иммобилизована в гипсовой повязке.'
+    lastDateText = 'Выписывается с улучшением в удовлетворительном состоянии для дальнейшего лечения в амбулаторных условиях\n'
+  }
   return (
         `Дата: ${new Date(date).toLocaleDateString()} Время: ${time}\n` +
         '\n' +
@@ -186,10 +189,9 @@ function generateText(patient: patientT, date: number, time: string): string {
         `Кожные покровы физиологической окраски. Температура тела ${patient.parameters.temperature} 0С.\n` +
         'Живот не вздут, мягкий, безболезненный, перитонеальных знаков нет.\n' +
         'Стул и мочеиспускание не нарушены.\n' +
-        `Локальный статус: \n` +
-        '\n' +
-        'Врач: ' +
-        '\n'
+        `Локальный статус: ${lastDateStatus}\n` +
+        `${lastDateText}\n` +
+        'Врач: '
   )
 }
 function addNewPatient() {
