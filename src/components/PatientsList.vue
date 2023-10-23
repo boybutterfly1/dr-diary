@@ -173,24 +173,26 @@ function generateText(patient: patientT, date: number, time: string): string {
   patient.parameters.hr = rando(65, 79);
   patient.parameters.rr = rando(12, 17);
   patient.parameters.temperature = rando(36.5, 36.8, 'float').toFixed(1);
-  let lastDateText = ''
-  let lastDateStatus = ''
+  let dischargeComplaint = ''
+  let dischargeText = ''
+  let dischargeStatus = ''
   if (date === range.value[1]) {
-    lastDateStatus = 'Повязки сухие, швы состоятельны, рана заживает первичным натяжением без признаков воспаления. Дистальнее нейротрофических нарушений не наблюдается. Конечность иммобилизована в гипсовой повязке.'
-    lastDateText = 'Выписывается с улучшением в удовлетворительном состоянии для дальнейшего лечения в амбулаторных условиях\n'
+    dischargeComplaint = 'Болезненность в области послеоперационной раны'
+    dischargeStatus = 'Повязки сухие, швы состоятельны, рана заживает первичным натяжением без признаков воспаления. Дистальнее нейротрофических нарушений не наблюдается. Конечность иммобилизована в гипсовой повязке.'
+    dischargeText = 'Выписывается с улучшением в удовлетворительном состоянии для дальнейшего лечения в амбулаторных условиях\n'
   }
   return (
         `Дата: ${new Date(date).toLocaleDateString()} Время: ${time}\n` +
         '\n' +
-        'Жалобы:\n' +
+        `Жалобы: ${dischargeComplaint}\n` +
         'Общее состояние удовлетворительное. \n' +
         `Тоны сердца ясные, ритм не нарушен. АД ${patient.parameters.bp} мм рт ст. ЧСС ${patient.parameters.hr} ударов в минуту.\n` +
         `Дыхание везикулярное, хрипов нет. ЧДД ${patient.parameters.rr} в минуту.\n` +
         `Кожные покровы физиологической окраски. Температура тела ${patient.parameters.temperature} 0С.\n` +
         'Живот не вздут, мягкий, безболезненный, перитонеальных знаков нет.\n' +
         'Стул и мочеиспускание не нарушены.\n' +
-        `Локальный статус: ${lastDateStatus}\n` +
-        `${lastDateText}\n` +
+        `Локальный статус: ${dischargeStatus}\n` +
+        `${dischargeText}\n` +
         'Врач: '
   )
 }
