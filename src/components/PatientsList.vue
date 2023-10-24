@@ -49,54 +49,6 @@ import Toast from 'primevue/toast';
 import {useGeneratorStore} from "@/store/generator";
 const generatorStore = useGeneratorStore()
 
-
-
-function createCopyText(patient: patientT) {
-  const days = (hospitalizationDates.value[1]-hospitalizationDates.value[0])/(24*60*60*1000) + 1
-  let date = hospitalizationDates.value[0]
-  let time = '12:00'
-  switch (patient.localStatus) {
-    case 'Удовлетворительный':
-      for (let i = 0; i < days; i+=2 ) {
-        if (date === hospitalizationDates.value[1]) {
-          patient.copyText.push(generateText(patient, hospitalizationDates.value[1], '10:00'))
-        } else {
-          patient.copyText.push(generateText(patient, date, time))
-          date += 172800000
-          time = '08:00'
-        }
-      }
-      if (date !== hospitalizationDates.value[1]) patient.copyText.push(generateText(patient, hospitalizationDates.value[1], '10:00'))
-    break;
-    case 'Средний':
-      for (let i = 0; i < days; i+=1 ) {
-        if (date === hospitalizationDates.value[1]) {
-          patient.copyText.push(generateText(patient, hospitalizationDates.value[1], '10:00'))
-        } else {
-          patient.copyText.push(generateText(patient, date, time))
-          date += 86400000
-          time = '08:00'
-        }
-      }
-      if (date !== hospitalizationDates.value[1]) patient.copyText.push(generateText(patient, hospitalizationDates.value[1], '10:00'))
-      break;
-    case 'Тяжелый':
-      for (let i = 0; i < days; i+=0.5 ) {
-        (i ^ 0) === i ? time = '08:00' : time = '20:00'
-        if (date === hospitalizationDates.value[1]) {
-          patient.copyText.push(generateText(patient, hospitalizationDates.value[1], '10:00'))
-          break;
-        } else {
-          patient.copyText.push(generateText(patient, date, time))
-          date += 43200000
-          time = '08:00'
-        }
-      }
-      if (date !== hospitalizationDates.value[1]) patient.copyText.push(generateText(patient, hospitalizationDates.value[1], '10:00'))
-      break;
-  }
-}
-
 </script>
 
 <style lang="sass" scoped>
